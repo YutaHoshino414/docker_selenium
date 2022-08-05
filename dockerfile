@@ -23,12 +23,12 @@ RUN cd /opt/chrome/ && \
     unzip chromedriver_linux64.zip
 
 # python package
-RUN pip install --upgrade pip
+# RUN pip install --upgrade pip
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r  requirements.txt
 
 WORKDIR /workspace
-COPY ./src /workspace
+COPY . /workspace
 
 ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/chrome
 ENV TZ Asia/Tokyo

@@ -3,4 +3,5 @@ services:
   crawl:
     build: .
     volumes:
-      - ./src:/workspace
+      - .:/workspace
+    tty: true

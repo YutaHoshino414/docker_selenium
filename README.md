@@ -4,3 +4,20 @@
 ライブラリの依存関係でscrapyが動かせなかったため、
 Dockerに慣れる目的で作成。  
 まずは、seleniumを動かせるところまで確認
+
+## STEP
+```
+$ docker-compose build (--no-cache)
+```
+
+```
+$ docker-compose up -d
+```
+
+```
+$ docker-compose exec crawl /bin/bash
+```
+
+```
+$ docker-compose down
+```
