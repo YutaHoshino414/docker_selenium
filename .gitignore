@@ -1,2 +1,2 @@
-.jl
-./src/job_crawl/data
+*.jl
+/src/job_crawl/datas/
