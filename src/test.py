@@ -1,8 +1,10 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from datetime import datetime
 import rich
-
+import schedule
+from time import sleep
 
 class Crawler:
     def __init__(self):
@@ -14,12 +16,23 @@ class Crawler:
         self.URL = 'http://quotes.toscrape.com/tag/humor/'
         
     def main(self):
+        now = datetime.now()
         self.driver.get(self.URL)
         for quote in self.driver.find_elements_by_xpath('//div[@class="quote"]/span[@class="text"]'):
-            print(quote.text)
+            with open(f"cron_auto_{now}.txt", "a") as f:
+                print(quote.text, file=f)
 
         self.driver.quit()
 
-if __name__ == '__main__':
+def task():
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     crawler = Crawler()
-    crawler.main() 
+    crawler.main()
+    print(f'------------------\n{now}: Task Done!\n-------------------')
+
+schedule.every(1).hours.do(task)
+
+if __name__ == '__main__':
+    while True:
+        schedule.run_pending()
+        sleep(1)
