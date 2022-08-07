@@ -18,7 +18,7 @@ from tqdm import tqdm
 class Crawler:
     def __init__(self):
         options = Options()
-        options.add_argument('--headless')  
+        #options.add_argument('--headless')  
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
@@ -39,8 +39,20 @@ def read_csv():
 
     with open(f'../{today}.csv', 'r') as f:
         lines = [line.split(',') for line in f.readlines()]
+    check_dict = {}
     for line in lines[1:]:
-        rich.print(line); sleep(2)
+        #rich.print(line); sleep(1)
+        if check_dict.get(line[3]):
+            continue
+        check_dict[line[3]] = line[5]
+    # 117 / 358件(2022-08-07) : 1/3は減った。
+    print(len(check_dict))
+    for url in [v.strip("\n") for v in check_dict.values()]:
+        print(repr(url))
+        crawler = Crawler()
+        crawler.driver.get(url); sleep(2)
+
+
 
 if __name__ == '__main__':
     read_csv()

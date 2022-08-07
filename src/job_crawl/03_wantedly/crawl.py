@@ -32,7 +32,7 @@ class Crawler:
     def main(self):
         with open(f'./{self.today}.csv', 'a') as f:
             writer = csv.writer(f, delimiter=',')
-            writer.writerow(["id", "entry_num", "tag", "company", "title", "url"])
+            writer.writerow(["id", "entry_num", "tag1","tag2", "company", "title", "url"])
         
         self.driver.get(self.URL);sleep(2)
         result = int(self.driver.find_element_by_xpath('//span[@class="total"]').text)
@@ -40,7 +40,7 @@ class Crawler:
         print(f"result:::{result}\npages:::{pages}")
         i = 0
         skip = 0
-        for page in tqdm(range(pages)[:50]):
+        for page in tqdm(range(pages)):
             page_url = f"{self.URL}&page={page + 1}"
             self.page_open(page_url); print(f'page >>{page}')
             print(f"skip:::{skip}") 
@@ -49,18 +49,24 @@ class Crawler:
                 if "学生" in title or "卒" in title:
                     skip += 1
                     continue
-                tag = single.find_element_by_xpath('../..//div[contains(@class,"project-tag small normal")]').text
-                if "QA" in tag or "テス" in tag or "インフラ" in tag or "PHP" in tag or "卒" in tag:
+                tag1 = single.find_element_by_xpath('../..//div[contains(@class,"project-tag small normal")]').text
+                if  "QA" in tag1 or "テス" in tag1 or "インフラ" in tag1 or "PHP" in tag1 or "Javaエ" in tag1 or "Swift" in tag1 or "Kotlin" in tag1 or "C" in tag1 or "組込" in tag1:
                     skip += 1
                     continue
-                
+                if tag := single.find_elements_by_xpath('../..//div[contains(@class,"project-tag small inverted")]'):
+                    tag2 = tag[0].text
+                    if tag2 == "学生インターン":
+                        continue
+                else:
+                    tag2 = ""
+
                 if entry := single.find_elements_by_xpath('../..//div[@class="entry-count"]/div'):
                     entry_count = entry[0].text
                 company = single.find_element_by_xpath('../../../following-sibling::div//h3').text
                 url = single.get_attribute('href')
                 
                 i += 1
-                self.output_csv([i, entry_count, tag, company, title, url])
+                self.output_csv([i, entry_count, tag1, tag2, company, title, url])
             self.page_close()
         self.driver.quit()
     
