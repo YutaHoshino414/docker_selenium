@@ -1,38 +1,28 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from datetime import datetime
+import requests
 import rich
-import schedule
-from time import sleep
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 
-class Crawler:
-    def __init__(self):
-        options = Options()
-        options.add_argument('--headless')  
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        self.driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
-        self.URL = 'http://quotes.toscrape.com/tag/humor/'
-        
-    def main(self):
-        now = datetime.now()
-        self.driver.get(self.URL)
-        for quote in self.driver.find_elements_by_xpath('//div[@class="quote"]/span[@class="text"]'):
-            with open(f"cron_auto_{now}.txt", "a") as f:
-                print(quote.text, file=f)
+def parse():
+    base = "https://www.keiostore.co.jp/business/store_list.html"
+    res = requests.get(base)
+    sp = BeautifulSoup(res.content, 'html.parser')
+    for url in [urljoin(base,a.get('href')) for a in sp.select('td.storeName a')]:
+        yield url
 
-        self.driver.quit()
+def collect(url):
+    columns = ["住所", "電話番号", "FAX番号", "営業時間", "アクセス", "駐車場", "取扱品目"]
+    datas = dict.fromkeys(columns, "")
+    res = requests.get(url)
+    sp = BeautifulSoup(res.content, 'html.parser')
+    datas["店舗名"] = sp.select_one("h2").text
+    for th in columns:
+        if column := sp.select(f"th:-soup-contains('{th}')~td"):
+            datas[th] = column[0].text
+    return datas
 
-def task():
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    crawler = Crawler()
-    crawler.main()
-    print(f'------------------\n{now}: Task Done!\n-------------------')
-
-schedule.every(1).hours.do(task)
 
 if __name__ == '__main__':
-    while True:
-        schedule.run_pending()
-        sleep(1)
+    for result in map(collect, parse()):
+        with open("results.jl", "a") as f:
+            print(result, file=f)
