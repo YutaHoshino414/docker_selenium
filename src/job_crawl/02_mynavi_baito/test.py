@@ -51,12 +51,13 @@ class Crawler:
         with open('../datas/results.jsonlines', 'a') as f:
             print(self.data, file=f)
 
-"""定期実行"""
 def task():
     crawler = Crawler()
     crawler.crawl_main()
-    print(f'------------------\n{self.today}: Task Done!\n-------------------')
+    print(f'------------------\n{crawler.today}: Task Done!\n-------------------')
 
+
+"""定期実行"""
 schedule.every(1).hours.do(task)
 
 if __name__ == '__main__':

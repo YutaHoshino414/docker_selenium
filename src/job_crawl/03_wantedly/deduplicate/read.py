@@ -42,15 +42,16 @@ def read_csv():
     check_dict = {}
     for line in lines[1:]:
         #rich.print(line); sleep(1)
-        if check_dict.get(line[3]):
+        if check_dict.get(line[4]):
             continue
-        check_dict[line[3]] = line[5]
-    # 117 / 358件(2022-08-07) : 1/3は減った。
+        check_dict[line[4]] = line[6]
+    # 117 / 1059件(2022-08-07) : 1/10減った。
+    print(len(lines))
     print(len(check_dict))
-    for url in [v.strip("\n") for v in check_dict.values()]:
-        print(repr(url))
-        crawler = Crawler()
-        crawler.driver.get(url); sleep(2)
+    #for url in [v.strip("\n") for v in check_dict.values()]:
+    #    print(repr(url))
+    #    crawler = Crawler()
+    #    crawler.driver.get(url); sleep(2)
 
 
 
