@@ -20,6 +20,7 @@ class Crawler:
         self.today = datetime.date.today()
         # start url
         self.URL = 'https://www.wantedly.com/projects?type=mixed&locations[]=kanto&keywords[]=アルバイト&occupation_types[]=jp__engineering'
+        self.data = {}
         
     def page_open(self, url):
         self.driver.execute_script(f"window.open('{url}')")
@@ -43,32 +44,41 @@ class Crawler:
         for page in tqdm(range(pages)):
             page_url = f"{self.URL}&page={page + 1}"
             self.page_open(page_url); print(f'page >>{page}')
+            
             print(f"skip:::{skip}") 
             for single in self.driver.find_elements_by_xpath('//div[@class="project-index-single-inner"]//h1/a'):
-                title = single.text
-                if "学生" in title or "卒" in title:
-                    skip += 1
-                    continue
-                tag1 = single.find_element_by_xpath('../..//div[contains(@class,"project-tag small normal")]').text
-                if  "QA" in tag1 or "テス" in tag1 or "インフラ" in tag1 or "PHP" in tag1 or "Javaエ" in tag1 or "Swift" in tag1 or "Kotlin" in tag1 or "C" in tag1 or "組込" in tag1:
-                    skip += 1
-                    continue
-                if tag := single.find_elements_by_xpath('../..//div[contains(@class,"project-tag small inverted")]'):
-                    tag2 = tag[0].text
-                    if tag2 == "学生インターン":
-                        continue
-                else:
-                    tag2 = ""
-
-                if entry := single.find_elements_by_xpath('../..//div[@class="entry-count"]/div'):
-                    entry_count = entry[0].text
-                company = single.find_element_by_xpath('../../../following-sibling::div//h3').text
+                self.data['id'] = i
                 url = single.get_attribute('href')
-                
-                i += 1
-                self.output_csv([i, entry_count, tag1, tag2, company, title, url])
+                skip = self.collect_from_index(i, skip, single)
             self.page_close()
         self.driver.quit()
+    
+    def collect_from_index(self, i, skip, single):
+        title = single.text
+        if "学生" in title or "卒" in title:
+            skip += 1
+            pass
+        tag1 = single.find_element_by_xpath('../..//div[contains(@class,"project-tag small normal")]').text
+        if  "QA" in tag1 or "テス" in tag1 or "インフラ" in tag1 or "PHP" in tag1 or "Javaエ" in tag1 or "Swift" in tag1 or "Kotlin" in tag1 or "C" in tag1 or "組込" in tag1:
+            skip += 1
+            pass
+        if tag := single.find_elements_by_xpath('../..//div[contains(@class,"project-tag small inverted")]'):
+            tag2 = tag[0].text
+            if tag2 == "学生インターン":
+                pass
+        else:
+            tag2 = ""
+        if entry := single.find_elements_by_xpath('../..//div[@class="entry-count"]/div'):
+            entry_count = entry[0].text
+            data['entry_count'] = entry_count
+        url = single.get_attribute('href')
+        data['title'] = title
+        data['tag1'] = tag1
+        data['tag2'] = tag2
+        data['company'] = single.find_element_by_xpath('../../../following-sibling::div//h3').text
+        data['url'] = url
+        self.output_csv(data.values())
+        return skip
     
     def output_csv(self, data:[]):
         with open(f'./{self.today}.csv', 'a') as f:

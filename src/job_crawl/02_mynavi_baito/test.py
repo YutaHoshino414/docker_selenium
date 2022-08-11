@@ -58,7 +58,7 @@ def task():
 
 
 """定期実行"""
-schedule.every(1).hours.do(task)
+schedule.every(1).days.do(task)
 
 if __name__ == '__main__':
     while True:
