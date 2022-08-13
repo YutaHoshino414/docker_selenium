@@ -1,2 +1,3 @@
 *.jl
+*/.scrapy
 /src/job_crawl/datas/
