@@ -18,12 +18,12 @@ class TestSpider(scrapy.Spider):
                 'price' : item.css('p.product-card__price::text').get(),
             }
         
-        for page in range(2, 26):
-            yield(
-                scrapy.Request(
-                    f'https://www.thewhiskyexchange.com/c/40/single-malt-scotch-whisky?pg={page}&psize=100&sort=pasc',
-                    callback=self.parse
-                ))
+        #for page in range(2, 26):
+        #    yield(
+        #        scrapy.Request(
+        #            f'https://www.thewhiskyexchange.com/c/40/single-malt-scotch-whisky?pg={page}&psize=100&sort=pasc',
+        #            callback=self.parse
+        #        ))
 
 
 process = CrawlerProcess(settings={
