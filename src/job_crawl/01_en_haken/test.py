@@ -1,7 +1,6 @@
 import os
 import csv
 import re
-import chromedriver_binary
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
@@ -13,8 +12,10 @@ class Crawler:
     def __init__(self):
         options = Options()
         options.add_argument('--headless')
-        options.add_argument('--blink-settings=imagesEnabled=false')
+        options.add_argument('--no-sandbox')
         options.add_argument('--lang=ja')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--blink-settings=imagesEnabled=false')
         options.add_argument('--window-size=1000,1000')
         self.driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
         self.data = {}
