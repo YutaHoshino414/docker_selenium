@@ -48,18 +48,15 @@ class Crawler:
             page_url = f"{self.URL}&page={page + 1}"
             # open 
             self.__page_open(page_url); print(f'page >>{page}')
-            
-            print(f"skip:::{skip}") 
             for single in self.driver.find_elements(by=By.XPATH, value='//div[@class="project-index-single-inner"]//h1/a'):
                 
                 skip = self.collect_from_index(i, skip, single)
                 i += 1
-            
             self.__page_close()
+            print(f"skip:::{skip}") 
         self.driver.quit()
     
     def collect_from_index(self, i, skip, single):
-        data = {}
         title = single.text
         if "学生" in title or "卒" in title:
             skip += 1
